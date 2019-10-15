@@ -5,4 +5,4 @@ LBCodeView *codeView = [[LBCodeView alloc] initWithFrame:CGRectMake(20, 200, CGR
     obj.backgroundColor = [UIColor cyanColor];
 }];
 ```
-![]()
+![](https://github.com/A1129434577/LBCodeView/blob/master/LBCodeView.gif?raw=true)
