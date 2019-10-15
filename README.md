@@ -1,2 +1,8 @@
 # LBCodeView
-验证码输入框，一个数字一个框，支持自定义验证码长度
+```objc
+LBCodeView *codeView = [[LBCodeView alloc] initWithFrame:CGRectMake(20, 200, CGRectGetWidth(self.view.frame)-20*2, 60) numbersCount:6 space:15];
+[codeView.codeShowButtons enumerateObjectsUsingBlock:^(UIButton * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    obj.backgroundColor = [UIColor cyanColor];
+}];
+```
+![]()
