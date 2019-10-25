@@ -10,6 +10,7 @@
 
 @interface LBCodeView ()<UITextFieldDelegate>
 @property (nonatomic,assign)NSUInteger count;
+@property (nonatomic,strong)UIView *cursorView;
 @end
 
 @implementation LBCodeView
@@ -27,8 +28,8 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hiddenTextFieldTextDidChange) name:UITextFieldTextDidChangeNotification object:_hiddenTextField];
         [self addSubview:_hiddenTextField];
         
+        CGFloat showButtonSide = (CGRectGetWidth(frame)-space*(count-1))/count;
         for (NSUInteger i = 0; i < count; i ++) {
-            CGFloat showButtonSide = (CGRectGetWidth(frame)-space*(count-1))/count;
             UIButton *codeShowButton = [[UIButton alloc] initWithFrame:CGRectMake(i*(showButtonSide+space), (CGRectGetHeight(frame)-showButtonSide)/2, showButtonSide, showButtonSide)];
             codeShowButton.titleLabel.font = [UIFont boldSystemFontOfSize:20];
             [codeShowButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
@@ -36,16 +37,23 @@
             [self addSubview:codeShowButton];
             [(NSMutableArray *)_codeShowButtons addObject:codeShowButton];
         }
+        
+        _cursorView = [[UIView alloc] initWithFrame:CGRectMake((showButtonSide-1.5)/2, 10, 1.5, showButtonSide-10*2)];
+        _cursorView.backgroundColor = [UIColor magentaColor];
+        
     }
     return self;
+}
+-(void)setTintColor:(UIColor *)tintColor{
+    [super setTintColor:tintColor];
+    _cursorView.backgroundColor = tintColor;
 }
 -(void)editBegain{
     [_hiddenTextField becomeFirstResponder];
 }
 
 -(BOOL)becomeFirstResponder{
-    [_hiddenTextField becomeFirstResponder];
-    return [super becomeFirstResponder];
+    return [_hiddenTextField becomeFirstResponder];
 }
 -(void)hiddenTextFieldTextDidChange{
     typeof(self) __weak weakSelf = self;
@@ -56,6 +64,13 @@
             [btn setTitle:nil forState:UIControlStateNormal];
         }
     }];
+    
+    if (_hiddenTextField.text.length < _codeShowButtons.count) {
+        _cursorView.hidden = NO;
+        UIButton *btn = _codeShowButtons[_hiddenTextField.text.length];
+        [btn addSubview:_cursorView];
+    }else _cursorView.hidden = YES;
+    
     if (_hiddenTextField.text.length == _count) {
         [self endEditing:YES];
         weakSelf.codeInputFinish?
@@ -63,6 +78,20 @@
     }
 }
 
+-(void)textFieldDidBeginEditing:(UITextField *)textField{
+    if (textField.text.length < _codeShowButtons.count) {
+        _cursorView.hidden = NO;
+        UIButton *btn = _codeShowButtons[textField.text.length];
+        [btn addSubview:_cursorView];
+        
+        [UIView animateWithDuration:1 delay:0 options:UIViewAnimationOptionRepeat animations:^{
+            self.cursorView.alpha = 0;
+        } completion:nil];
+    }
+}
+- (void)textFieldDidEndEditing:(UITextField *)textField{
+    _cursorView.hidden = YES;
+}
 
 -(BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string{
     if (string.length) {
@@ -75,4 +104,5 @@
 -(void)dealloc{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
+
 @end
