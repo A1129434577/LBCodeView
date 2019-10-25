@@ -29,8 +29,9 @@
         [self addSubview:_hiddenTextField];
         
         CGFloat showButtonSide = (CGRectGetWidth(frame)-space*(count-1))/count;
+        UIButton *codeShowButton;
         for (NSUInteger i = 0; i < count; i ++) {
-            UIButton *codeShowButton = [[UIButton alloc] initWithFrame:CGRectMake(i*(showButtonSide+space), (CGRectGetHeight(frame)-showButtonSide)/2, showButtonSide, showButtonSide)];
+            codeShowButton = [[UIButton alloc] initWithFrame:CGRectMake(i*(showButtonSide+space), (CGRectGetHeight(frame)-showButtonSide)/2, showButtonSide, showButtonSide)];
             codeShowButton.titleLabel.font = [UIFont boldSystemFontOfSize:20];
             [codeShowButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
             [codeShowButton addTarget:self action:@selector(editBegain) forControlEvents:UIControlEventTouchUpInside];
@@ -38,7 +39,7 @@
             [(NSMutableArray *)_codeShowButtons addObject:codeShowButton];
         }
         
-        _cursorView = [[UIView alloc] initWithFrame:CGRectMake((showButtonSide-1.5)/2, 10, 1.5, showButtonSide-10*2)];
+        _cursorView = [[UIView alloc] initWithFrame:CGRectMake((showButtonSide-1.5)/2, (showButtonSide-codeShowButton.titleLabel.font.lineHeight)/2, 1.5, codeShowButton.titleLabel.font.lineHeight)];
         _cursorView.backgroundColor = [UIColor magentaColor];
         
     }
@@ -68,6 +69,7 @@
     if (_hiddenTextField.text.length < _codeShowButtons.count) {
         _cursorView.hidden = NO;
         UIButton *btn = _codeShowButtons[_hiddenTextField.text.length];
+        _cursorView.frame = CGRectMake((CGRectGetWidth(btn.bounds)-CGRectGetWidth(_cursorView.bounds))/2, (CGRectGetHeight(btn.bounds)-btn.titleLabel.font.lineHeight)/2, CGRectGetWidth(_cursorView.bounds), btn.titleLabel.font.lineHeight);
         [btn addSubview:_cursorView];
     }else _cursorView.hidden = YES;
     
@@ -82,6 +84,7 @@
     if (textField.text.length < _codeShowButtons.count) {
         _cursorView.hidden = NO;
         UIButton *btn = _codeShowButtons[textField.text.length];
+        _cursorView.frame = CGRectMake((CGRectGetWidth(btn.bounds)-CGRectGetWidth(_cursorView.bounds))/2, (CGRectGetHeight(btn.bounds)-btn.titleLabel.font.lineHeight)/2, CGRectGetWidth(_cursorView.bounds), btn.titleLabel.font.lineHeight);
         [btn addSubview:_cursorView];
         
         [UIView animateWithDuration:1 delay:0 options:UIViewAnimationOptionRepeat animations:^{
