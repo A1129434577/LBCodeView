@@ -8,6 +8,17 @@
 
 #import "LBCodeView.h"
 
+@interface LBCodeTextField : UITextField
+
+@end
+@implementation LBCodeTextField
+- (void)setText:(NSString *)text{
+    [super setText:text];
+    [[NSNotificationCenter defaultCenter] postNotificationName:UITextFieldTextDidChangeNotification object:self];
+}
+
+@end
+
 @interface LBCodeView ()<UITextFieldDelegate>
 @property (nonatomic,assign)NSUInteger count;
 @property (nonatomic,strong)UIView *cursorView;
@@ -22,12 +33,12 @@
         _count = count;
         _codeShowButtons = [[NSMutableArray alloc] init];
         
-        _hiddenTextField = [[UITextField alloc] init];
+        _hiddenTextField = [[LBCodeTextField alloc] init];
         _hiddenTextField.delegate = self;
         _hiddenTextField.keyboardType = UIKeyboardTypeNumberPad;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hiddenTextFieldTextDidChange) name:UITextFieldTextDidChangeNotification object:_hiddenTextField];
         [self addSubview:_hiddenTextField];
-        
+                
         CGFloat showButtonSide = (CGRectGetWidth(frame)-space*(count-1))/count;
         UIButton *codeShowButton;
         for (NSUInteger i = 0; i < count; i ++) {
@@ -49,6 +60,7 @@
     [super setTintColor:tintColor];
     _cursorView.backgroundColor = tintColor;
 }
+
 -(void)editBegain{
     [_hiddenTextField becomeFirstResponder];
 }
@@ -78,7 +90,6 @@
     }else _cursorView.hidden = YES;
     
     if (_hiddenTextField.text.length == _count) {
-        [self endEditing:YES];
         weakSelf.codeInputFinish?
         weakSelf.codeInputFinish(weakSelf.hiddenTextField.text):NULL;
     }
