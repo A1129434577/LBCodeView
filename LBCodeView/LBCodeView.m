@@ -41,7 +41,7 @@
         _hiddenTextField.frame = CGRectMake(0, CGRectGetMaxY(codeShowButton.frame), CGRectGetWidth(frame), 0);
         
         _cursorView = [[UIView alloc] initWithFrame:CGRectMake((showButtonSide-1.5)/2, (showButtonSide-codeShowButton.titleLabel.font.lineHeight)/2, 1.5, codeShowButton.titleLabel.font.lineHeight)];
-        _cursorView.backgroundColor = [UIColor magentaColor];
+        _cursorView.backgroundColor = self.tintColor;
     }
     return self;
 }
