@@ -12,8 +12,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface LBCodeView : UIView
 @property (nonatomic,strong,readonly)UITextField *hiddenTextField;//控制输入的TextField，它总是隐藏的
+@property (nonatomic,assign) BOOL secureTextEntry;       // default is NO
 @property (nonatomic,strong,readonly)NSArray<UIButton *> *codeShowButtons;//展示code的buttons
-@property(nonatomic,copy)void(^codeInputFinish)(NSString *code);
+@property (nonatomic,copy)void(^codeInputFinish)(NSString *code);
 
 - (instancetype)initWithFrame:(CGRect)frame numbersCount:(NSUInteger)count space:(CGFloat)space;
 @end

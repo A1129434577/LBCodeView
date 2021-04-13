@@ -60,7 +60,11 @@
     typeof(self) __weak weakSelf = self;
     [_codeShowButtons enumerateObjectsUsingBlock:^(__weak UIButton * _Nonnull btn, NSUInteger idx, BOOL * _Nonnull stop) {
         if (idx < weakSelf.hiddenTextField.text.length) {
-            [btn setTitle:[weakSelf.hiddenTextField.text substringWithRange:NSMakeRange(idx, 1)] forState:UIControlStateNormal];
+            if (weakSelf.hiddenTextField.secureTextEntry || weakSelf.secureTextEntry) {
+                [btn setTitle:@"●" forState:UIControlStateNormal];
+            }else{
+                [btn setTitle:[weakSelf.hiddenTextField.text substringWithRange:NSMakeRange(idx, 1)] forState:UIControlStateNormal];
+            }
         }else{
             [btn setTitle:nil forState:UIControlStateNormal];
         }
