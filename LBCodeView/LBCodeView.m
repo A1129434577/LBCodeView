@@ -44,7 +44,7 @@
         for (NSUInteger i = 0; i < count; i ++) {
             codeShowButton = [[UIButton alloc] initWithFrame:CGRectMake(i*(showButtonSide+space), (CGRectGetHeight(frame)-showButtonSide)/2, showButtonSide, showButtonSide)];
             codeShowButton.titleLabel.font = [UIFont boldSystemFontOfSize:20];
-            [codeShowButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+            [codeShowButton setTitleColor:_hiddenTextField.textColor forState:UIControlStateNormal];
             [codeShowButton addTarget:self action:@selector(editBegain) forControlEvents:UIControlEventTouchUpInside];
             [self addSubview:codeShowButton];
             [(NSMutableArray *)_codeShowButtons addObject:codeShowButton];
