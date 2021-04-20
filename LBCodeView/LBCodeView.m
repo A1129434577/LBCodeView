@@ -21,7 +21,7 @@
 
 @interface LBCodeView ()<UITextFieldDelegate>
 @property (nonatomic,assign)NSUInteger count;
-@property (nonatomic,strong)UIView *cursorView;
+@property (nonatomic,strong)UIView *cursorView;//模拟光标
 @end
 
 @implementation LBCodeView
@@ -38,6 +38,9 @@
         _hiddenTextField.keyboardType = UIKeyboardTypeNumberPad;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hiddenTextFieldTextDidChange) name:UITextFieldTextDidChangeNotification object:_hiddenTextField];
         [self addSubview:_hiddenTextField];
+        
+        [_hiddenTextField addObserver:self forKeyPath:NSStringFromSelector(@selector(textColor)) options:NSKeyValueObservingOptionNew context:nil];
+        [_hiddenTextField addObserver:self forKeyPath:NSStringFromSelector(@selector(textColor)) options:NSKeyValueObservingOptionNew context:nil];
                 
         CGFloat showButtonSide = (CGRectGetWidth(frame)-space*(count-1))/count;
         UIButton *codeShowButton;
@@ -72,7 +75,7 @@
     typeof(self) __weak weakSelf = self;
     [_codeShowButtons enumerateObjectsUsingBlock:^(__weak UIButton * _Nonnull btn, NSUInteger idx, BOOL * _Nonnull stop) {
         if (idx < weakSelf.hiddenTextField.text.length) {
-            if (weakSelf.hiddenTextField.secureTextEntry || weakSelf.secureTextEntry) {
+            if (weakSelf.hiddenTextField.secureTextEntry) {
                 [btn setTitle:@"●" forState:UIControlStateNormal];
             }else{
                 [btn setTitle:[weakSelf.hiddenTextField.text substringWithRange:NSMakeRange(idx, 1)] forState:UIControlStateNormal];
@@ -119,7 +122,18 @@
     }
     return YES;
 }
+-(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context{
+    if (object == _hiddenTextField) {
+        if ([keyPath isEqualToString:NSStringFromSelector(@selector(textColor))]) {
+            UIColor *textColor = change[NSKeyValueChangeNewKey];
+            [self.codeShowButtons enumerateObjectsUsingBlock:^(UIButton * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                [obj setTitleColor:textColor forState:UIControlStateNormal];
+            }];
+        }
+    }
+}
 -(void)dealloc{
+    [_hiddenTextField removeObserver:self forKeyPath:NSStringFromSelector(@selector(textColor))];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
