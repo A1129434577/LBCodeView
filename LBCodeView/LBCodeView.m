@@ -33,28 +33,28 @@
         _count = count;
         _codeShowButtons = [[NSMutableArray alloc] init];
         
-        _hiddenTextField = [[LBCodeTextField alloc] initWithFrame:CGRectMake(CGRectGetWidth(frame)/2, CGRectGetHeight(frame), 0, 0)];
+        _hiddenTextField = [[LBCodeTextField alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(frame), CGRectGetWidth(frame), 0)];
         _hiddenTextField.delegate = self;
         _hiddenTextField.keyboardType = UIKeyboardTypeNumberPad;
+        _hiddenTextField.font = [UIFont boldSystemFontOfSize:20];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hiddenTextFieldTextDidChange) name:UITextFieldTextDidChangeNotification object:_hiddenTextField];
         [self addSubview:_hiddenTextField];
         
         [_hiddenTextField addObserver:self forKeyPath:NSStringFromSelector(@selector(textColor)) options:NSKeyValueObservingOptionNew context:nil];
-        [_hiddenTextField addObserver:self forKeyPath:NSStringFromSelector(@selector(textColor)) options:NSKeyValueObservingOptionNew context:nil];
+        [_hiddenTextField addObserver:self forKeyPath:NSStringFromSelector(@selector(font)) options:NSKeyValueObservingOptionNew context:nil];
                 
         CGFloat showButtonSide = (CGRectGetWidth(frame)-space*(count-1))/count;
         UIButton *codeShowButton;
         for (NSUInteger i = 0; i < count; i ++) {
             codeShowButton = [[UIButton alloc] initWithFrame:CGRectMake(i*(showButtonSide+space), (CGRectGetHeight(frame)-showButtonSide)/2, showButtonSide, showButtonSide)];
-            codeShowButton.titleLabel.font = [UIFont boldSystemFontOfSize:20];
+            codeShowButton.titleLabel.font = _hiddenTextField.font;
             [codeShowButton setTitleColor:_hiddenTextField.textColor forState:UIControlStateNormal];
             [codeShowButton addTarget:self action:@selector(editBegain) forControlEvents:UIControlEventTouchUpInside];
             [self addSubview:codeShowButton];
             [(NSMutableArray *)_codeShowButtons addObject:codeShowButton];
         }
-        _hiddenTextField.frame = CGRectMake(0, CGRectGetMaxY(codeShowButton.frame), CGRectGetWidth(frame), 0);
         
-        _cursorView = [[UIView alloc] initWithFrame:CGRectMake((showButtonSide-1.5)/2, (showButtonSide-codeShowButton.titleLabel.font.lineHeight)/2, 1.5, codeShowButton.titleLabel.font.lineHeight)];
+        _cursorView = [[UIView alloc] initWithFrame:CGRectMake((showButtonSide-1.5)/2, (showButtonSide-codeShowButton.titleLabel.font.lineHeight)/2, 1.5, _hiddenTextField.font.lineHeight)];
         _cursorView.backgroundColor = self.tintColor;
     }
     return self;
@@ -88,7 +88,10 @@
     if (_hiddenTextField.text.length < _codeShowButtons.count) {
         _cursorView.hidden = NO;
         UIButton *btn = _codeShowButtons[_hiddenTextField.text.length];
-        _cursorView.frame = CGRectMake((CGRectGetWidth(btn.bounds)-CGRectGetWidth(_cursorView.bounds))/2, (CGRectGetHeight(btn.bounds)-btn.titleLabel.font.lineHeight)/2, CGRectGetWidth(_cursorView.bounds), btn.titleLabel.font.lineHeight);
+        CGRect cursorViewFrame = _cursorView.frame;
+        cursorViewFrame.origin.x = (CGRectGetWidth(btn.bounds)-CGRectGetWidth(_cursorView.bounds))/2;
+        cursorViewFrame.origin.y = (CGRectGetHeight(btn.bounds)-btn.titleLabel.font.lineHeight)/2;
+        _cursorView.frame = cursorViewFrame;
         [btn addSubview:_cursorView];
     }else _cursorView.hidden = YES;
     
@@ -102,7 +105,10 @@
     if (textField.text.length < _codeShowButtons.count) {
         _cursorView.hidden = NO;
         UIButton *btn = _codeShowButtons[textField.text.length];
-        _cursorView.frame = CGRectMake((CGRectGetWidth(btn.bounds)-CGRectGetWidth(_cursorView.bounds))/2, (CGRectGetHeight(btn.bounds)-btn.titleLabel.font.lineHeight)/2, CGRectGetWidth(_cursorView.bounds), btn.titleLabel.font.lineHeight);
+        CGRect cursorViewFrame = _cursorView.frame;
+        cursorViewFrame.origin.x = (CGRectGetWidth(btn.bounds)-CGRectGetWidth(_cursorView.bounds))/2;
+        cursorViewFrame.origin.y = (CGRectGetHeight(btn.bounds)-btn.titleLabel.font.lineHeight)/2;
+        _cursorView.frame = cursorViewFrame;
         [btn addSubview:_cursorView];
         
         [UIView animateWithDuration:1 delay:0 options:UIViewAnimationOptionRepeat animations:^{
@@ -130,10 +136,21 @@
                 [obj setTitleColor:textColor forState:UIControlStateNormal];
             }];
         }
+        else if ([keyPath isEqualToString:NSStringFromSelector(@selector(font))]) {
+            UIFont *font = change[NSKeyValueChangeNewKey];
+            [self.codeShowButtons enumerateObjectsUsingBlock:^(UIButton * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                obj.titleLabel.font = font;
+            }];
+            
+            CGRect cursorViewFrame = _cursorView.frame;
+            cursorViewFrame.size.height = _hiddenTextField.font.lineHeight;
+            _cursorView.frame = cursorViewFrame;
+        }
     }
 }
 -(void)dealloc{
     [_hiddenTextField removeObserver:self forKeyPath:NSStringFromSelector(@selector(textColor))];
+    [_hiddenTextField removeObserver:self forKeyPath:NSStringFromSelector(@selector(font))];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
