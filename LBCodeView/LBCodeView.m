@@ -33,7 +33,7 @@
         _count = count;
         _codeShowButtons = [[NSMutableArray alloc] init];
         
-        _hiddenTextField = [[LBCodeTextField alloc] init];
+        _hiddenTextField = [[LBCodeTextField alloc] initWithFrame:CGRectMake(CGRectGetWidth(frame)/2, CGRectGetHeight(frame), 0, 0)];
         _hiddenTextField.delegate = self;
         _hiddenTextField.keyboardType = UIKeyboardTypeNumberPad;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hiddenTextFieldTextDidChange) name:UITextFieldTextDidChangeNotification object:_hiddenTextField];
