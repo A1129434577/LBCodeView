@@ -43,10 +43,10 @@
         [_hiddenTextField addObserver:self forKeyPath:NSStringFromSelector(@selector(textColor)) options:NSKeyValueObservingOptionNew context:nil];
         [_hiddenTextField addObserver:self forKeyPath:NSStringFromSelector(@selector(font)) options:NSKeyValueObservingOptionNew context:nil];
                 
-        CGFloat showButtonSide = (CGRectGetWidth(frame)-space*(count-1))/count;
+        CGFloat showButtonWidth = (CGRectGetWidth(frame)-space*(count-1))/count;
         UIButton *codeShowButton;
         for (NSUInteger i = 0; i < count; i ++) {
-            codeShowButton = [[UIButton alloc] initWithFrame:CGRectMake(i*(showButtonSide+space), (CGRectGetHeight(frame)-showButtonSide)/2, showButtonSide, showButtonSide)];
+            codeShowButton = [[UIButton alloc] initWithFrame:CGRectMake(i*(showButtonWidth+space), 0, showButtonWidth, CGRectGetHeight(frame))];
             codeShowButton.titleLabel.font = _hiddenTextField.font;
             [codeShowButton setTitleColor:_hiddenTextField.textColor forState:UIControlStateNormal];
             [codeShowButton addTarget:self action:@selector(editBegain) forControlEvents:UIControlEventTouchUpInside];
@@ -54,7 +54,8 @@
             [(NSMutableArray *)_codeShowButtons addObject:codeShowButton];
         }
         
-        _cursorView = [[UIView alloc] initWithFrame:CGRectMake((showButtonSide-1.5)/2, (showButtonSide-codeShowButton.titleLabel.font.lineHeight)/2, 1.5, _hiddenTextField.font.lineHeight)];
+        _cursorView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1.5, _hiddenTextField.font.lineHeight)];
+        _cursorView.center = CGPointMake(CGRectGetWidth(codeShowButton.bounds)/2, CGRectGetHeight(codeShowButton.bounds)/2);
         _cursorView.backgroundColor = self.tintColor;
     }
     return self;
@@ -143,6 +144,7 @@
             }];
             
             CGRect cursorViewFrame = _cursorView.frame;
+            cursorViewFrame.origin.y = (CGRectGetHeight(self.codeShowButtons.firstObject.bounds)-_hiddenTextField.font.lineHeight)/2;
             cursorViewFrame.size.height = _hiddenTextField.font.lineHeight;
             _cursorView.frame = cursorViewFrame;
         }
